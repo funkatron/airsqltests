@@ -19,7 +19,7 @@
 	
 	
 	<script type="text/javascript" charset="utf-8">
-		sc.setDumpLevel(5);
+		sc.setDumpLevel(1);
 		
 		/*
 			make twitter object
@@ -42,14 +42,15 @@
 			var data = sch.getEventData(e);
 			sch.debug('Got new public data');
 			
-			var time_start = new Date();
 			for (var i=0; i < data.length; i++) {
+				var time_start = new Date();
 				TweetModel.saveTweet(data[i]);
+				var time_stop = new Date();
+				var time_elapsed = new Date();
+				time_elapsed.setTime(time_stop.getTime() - time_start.getTime());
+				air.trace('Inserting took ' + time_elapsed.getMilliseconds() + 'ms');
 			};
-			var time_stop = new Date();
-			var time_elapsed = new Date();
-			time_elapsed.setTime(time_stop.getTime() - time_start.getTime());
-			sch.debug('Inserting took ' + time_elapsed.getMilliseconds() + 'ms');
+
 			
 		});		
 	
