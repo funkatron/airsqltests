@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+	<script src="js/AIRAliases.js" type="text/javascript" charset="utf-8"></script>
+	<!-- <script src="js/AIRIntrospector.js" type="text/javascript" charset="utf-8"></script> -->
+	<script src="js/jazz_record.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/jquery-1.3.2.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/spazcore-air.js" type="text/javascript" charset="utf-8"></script>
+	
+	<script src="js/TweetModel.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/TwUserModel.js" type="text/javascript" charset="utf-8"></script>
+	
+
+	<title></title>
+	
+	
+	<script type="text/javascript" charset="utf-8">
+		sc.setDumpLevel(5);
+		
+		/*
+			make twitter object
+		*/
+		var twit = new SpazTwit();
+		
+		/*
+			JazzRecord initialization
+		*/
+		JazzRecord.adapter = new JazzRecord.AirAdapter({dbFile: "spaz_jr.db"});
+		JazzRecord.depth = 0;
+		JazzRecord.debug = true;
+		JazzRecord.migrate();
+		JazzRecord.addIndex('tweets', 'twitter_id');
+		JazzRecord.addIndex('twusers', 'twitter_id');
+		JazzRecord.addIndex('twusers', 'screen_name');
+		
+
+		sch.listen(document, 'new_public_timeline_data', function(e) {
+			var data = sch.getEventData(e);
+			sch.debug('Got new public data');
+			
+			var time_start = new Date();
+			for (var i=0; i < data.length; i++) {
+				TweetModel.saveTweet(data[i]);
+			};
+			var time_stop = new Date();
+			var time_elapsed = new Date();
+			time_elapsed.setTime(time_stop.getTime() - time_start.getTime());
+			sch.debug('Inserting took ' + time_elapsed.getMilliseconds() + 'ms');
+			
+		});		
+	
+		$(document).ready( function() {
+			
+			$('#getdata').click(function() {
+				twit.getPublicTimeline();
+			});
+			
+		});
+	</script>
+	
+</head>
+
+<body>
+	<strong>Watch the console for debug output</strong>
+	
+	<input type="button" name="getdata" value="Get New Public Timeline Data" id="getdata">
+</body>
+</html>
